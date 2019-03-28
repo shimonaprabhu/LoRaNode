@@ -257,51 +257,14 @@ struct lmic_t {
 //! The state of LMIC MAC layer is encapsulated in this variable.
 DECLARE_LMIC; //!< \internal
 
-//! Construct a bit map of allowed datarates from drlo to drhi (both included).
-#define DR_RANGE_MAP(drlo,drhi) (((u2_t)0xFFFF<<(drlo)) & ((u2_t)0xFFFF>>(15-(drhi))))
-#if defined(CFG_eu868)
-enum { BAND_MILLI=0, BAND_CENTI=1, BAND_DECI=2, BAND_AUX=3 };
-bit_t LMIC_setupBand (u1_t bandidx, s1_t txpow, u2_t txcap);
-#endif
 bit_t LMIC_setupChannel (u1_t channel, u4_t freq, u2_t drmap, s1_t band);
-void  LMIC_disableChannel (u1_t channel);
-#if defined(CFG_us915)
-void  LMIC_enableChannel (u1_t channel);
-void  LMIC_enableSubBand (u1_t band);
-void  LMIC_disableSubBand (u1_t band);
 void  LMIC_selectSubBand (u1_t band);
-#endif
-
-void  LMIC_setDrTxpow   (dr_t dr, s1_t txpow);  // set default/start DR/txpow
-void  LMIC_setAdrMode   (bit_t enabled);        // set ADR mode (if mobile turn off)
-#if !defined(DISABLE_JOIN)
-bit_t LMIC_startJoining (void);
-#endif
-
-void  LMIC_shutdown     (void);
-void  LMIC_init         (void);
+void  LMIC_setDrTxpow   (dr_t dr, s1_t txpow); 
 void  LMIC_reset        (void);
-void  LMIC_clrTxData    (void);
-void  LMIC_setTxData    (void);
 int   LMIC_setTxData2   (u1_t port, xref2u1_t data, u1_t dlen, u1_t confirmed);
-void  LMIC_sendAlive    (void);
-
-#if !defined(DISABLE_BEACONS)
-bit_t LMIC_enableTracking  (u1_t tryBcnInfo);
-void  LMIC_disableTracking (void);
-#endif
-
-#if !defined(DISABLE_PING)
-void  LMIC_stopPingable  (void);
-void  LMIC_setPingable   (u1_t intvExp);
-#endif
-#if !defined(DISABLE_JOIN)
-void  LMIC_tryRejoin     (void);
-#endif
 
 void LMIC_setSession (u4_t netid, devaddr_t devaddr, xref2u1_t nwkKey, xref2u1_t artKey);
 void LMIC_setLinkCheckMode (bit_t enabled);
-void LMIC_setClockError(u2_t error);
 
 // Declare onEvent() function, to make sure any definition will have the
 // C conventions, even when in a C++ file.

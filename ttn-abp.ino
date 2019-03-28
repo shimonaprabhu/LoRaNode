@@ -1,8 +1,7 @@
 /*This uses ABP (Activation-by-personalisation), where a DevAddr and
 Session keys are preconfigured (unlike OTAA, where a DevEUI and
 application key is configured, while the DevAddr and session keys are
-assigned/generated in the over-the-air-activation procedure)*/
-
+assigned/generated in the over-the-air-activation procedure).*/
 
 #include <lmic.h>
 #include <hal/hal.h>
@@ -12,8 +11,6 @@ assigned/generated in the over-the-air-activation procedure)*/
 // This is the default Semtech key, which is used by the early prototype TTN
 // network.
 static const PROGMEM u1_t NWKSKEY[16] = { 0x47, 0x92, 0xA7, 0x51, 0x82, 0xFE, 0x86, 0xBD, 0x71, 0xE0, 0xED, 0x19, 0x8D, 0x51, 0xDE, 0x91 };
-
-//https://www.thethingsnetwork.org/docs/lorawan/security.html
 
 // LoRaWAN AppSKey, application session key
 // This is the default Semtech key, which is used by the early prototype TTN
