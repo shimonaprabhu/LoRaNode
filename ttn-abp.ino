@@ -1,12 +1,33 @@
-/* This example sends a valid LoRaWAN packet with payload "Hello,
- world!", using frequency and encryption settings matching those of
- the The Things Network.*/
- 
- /* This uses ABP (Activation-by-personalisation), where a DevAddr and
- Session keys are preconfigured (unlike OTAA, where a DevEUI and
- application key is configured, while the DevAddr and session keys are
- assigned/generated in the over-the-air-activation procedure).*/
-
+/*******************************************************************************
+ * Copyright (c) 2015 Thomas Telkamp and Matthijs Kooijman
+ *
+ * Permission is hereby granted, free of charge, to anyone
+ * obtaining a copy of this document and accompanying files,
+ * to do whatever they want with them without any restriction,
+ * including, but not limited to, copying, modification and redistribution.
+ * NO WARRANTY OF ANY KIND IS PROVIDED.
+ *
+ * This example sends a valid LoRaWAN packet with payload "Hello,
+ * world!", using frequency and encryption settings matching those of
+ * the The Things Network.
+ *
+ * This uses ABP (Activation-by-personalisation), where a DevAddr and
+ * Session keys are preconfigured (unlike OTAA, where a DevEUI and
+ * application key is configured, while the DevAddr and session keys are
+ * assigned/generated in the over-the-air-activation procedure).
+ *
+ * Note: LoRaWAN per sub-band duty-cycle limitation is enforced (1% in
+ * g1, 0.1% in g2), but not the TTN fair usage policy (which is probably
+ * violated by this sketch when left running for longer)!
+ *
+ * To use this sketch, first register your application and device with
+ * the things network, to set or generate a DevAddr, NwkSKey and
+ * AppSKey. Each device should have their own unique values for these
+ * fields.
+ *
+ * Do not forget to define the radio type correctly in config.h.
+ *
+ *******************************************************************************/
 
 #include <lmic.h>
 #include <hal/hal.h>
@@ -15,23 +36,19 @@
 // LoRaWAN NwkSKey, network session key
 // This is the default Semtech key, which is used by the early prototype TTN
 // network.
-static const PROGMEM u1_t NWKSKEY[16] = { 0x2B, 0x7E, 0x15, 0x16, 0x28, 0xAE, 0xD2, 0xA6, 0xAB, 0xF7, 0x15, 0x88, 0x09, 0xCF, 0x4F, 0x3C };
+static const PROGMEM u1_t NWKSKEY[16] = { 0x47, 0x92, 0xA7, 0x51, 0x82, 0xFE, 0x86, 0xBD, 0x71, 0xE0, 0xED, 0x19, 0x8D, 0x51, 0xDE, 0x91 };
 
 // LoRaWAN AppSKey, application session key
 // This is the default Semtech key, which is used by the early prototype TTN
 // network.
-
-/*https://www.newieventures.com.au/blogtext/2018/2/26/lorawan-otaa-or-abp
-refer this link for more information on OTAA vs ABP*/
-static const u1_t PROGMEM APPSKEY[16] = { 0x2B, 0x7E, 0x15, 0x16, 0x28, 0xAE, 0xD2, 0xA6, 0xAB, 0xF7, 0x15, 0x88, 0x09, 0xCF, 0x4F, 0x3C };
+static const u1_t PROGMEM APPSKEY[16] = { 0xD9, 0xA5, 0x06, 0x23, 0xFC, 0x6B, 0x48, 0xBD, 0x21, 0x8F, 0x7C, 0x01, 0xAC, 0x4A, 0xF2, 0x6F };
 
 // LoRaWAN end-device address (DevAddr)
-static const u4_t DEVADDR = 0x03FF0001 ; // <-- Change this address for every node!
+static const u4_t DEVADDR = 0x2601148F; // <-- Change this address for every node!
 
-/*https://www.thethingsnetwork.org/docs/lorawan/security.html
-refer the link for more details on LoRa security*/
 // These callbacks are only used in over-the-air activation, so they are
-// left empty here 
+// left empty here (we cannot leave them out completely unless
+// DISABLE_JOIN is set in config.h, otherwise the linker will complain).
 void os_getArtEui (u1_t* buf) { }
 void os_getDevEui (u1_t* buf) { }
 void os_getDevKey (u1_t* buf) { }
@@ -45,10 +62,10 @@ const unsigned TX_INTERVAL = 60;
 
 // Pin mapping
 const lmic_pinmap lmic_pins = {
-    .nss = 6,
+    .nss = 10,
     .rxtx = LMIC_UNUSED_PIN,
-    .rst = 5,
-    .dio = {2, 3, 4},
+    .rst = 9,
+    .dio = {2, 6, 7},
 };
 
 void onEvent (ev_t ev) {
